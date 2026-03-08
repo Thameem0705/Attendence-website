@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn, Eye, EyeOff, CalendarCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Button from '../components/ui/Button';
 
 export const Login = () => {
     const [username, setUsername] = useState('');
@@ -105,22 +106,14 @@ export const Login = () => {
                             </div>
                         </div>
 
-                        <button
-                            id="login-submit"
+                        <Button
                             type="submit"
-                            disabled={loading}
-                            className="w-full font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none flex justify-center text-white"
-                            style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 20px rgba(99, 102, 241, 0.4)' }}
+                            isLoading={loading}
+                            fullWidth
                         >
-                            {loading ? (
-                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    <LogIn className="w-5 h-5" />
-                                    Sign In
-                                </span>
-                            )}
-                        </button>
+                            <LogIn className="w-5 h-5" />
+                            Sign In
+                        </Button>
                     </form>
                 </div>
 

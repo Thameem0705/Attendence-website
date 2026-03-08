@@ -1,16 +1,22 @@
-# React + Vite
+# AttendSync - Smart Attendance Management (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend Vite React application for the AttendSync management system.
 
-Currently, two official plugins are available:
+## Setup and Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Run `npm install` to install dependencies.
+2. Setup your Environment Variables (see below).
+3. Run `npm run dev` to start the development server.
 
-## React Compiler
+## Environment Variables & Security
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> **CRITICAL SECURITY NOTICE:** This frontend connects directly to Supabase.
+> To protect your database, you must **NEVER** commit your `.env` file to version control. Let `.gitignore` do its job.
 
-## Expanding the ESLint configuration
+1. Copy the `.env.example` file to a new file named `.env`.
+2. Fill in the values for your Supabase project in `.env`.
+3. In your **Vercel Project Settings**, add exactly the same environment variables so the production build can connect to your database.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Database Security
+
+Since you are using a custom authentication scheme (`profiles` table instead of Supabase Auth), native Supabase Row Level Security (RLS) policies relying on `auth.uid()` cannot be used. The application must use `supabaseAdmin.js` for all data fetching. Ensure your `VITE_SUPABASE_SERVICE_ROLE_KEY` is kept strictly within the `.env` file and securely deployed as an environment variable in Vercel to protect your database.

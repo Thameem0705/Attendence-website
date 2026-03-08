@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
+import { attendanceService } from '../../services/attendanceService';
+import Button from '../../components/ui/Button';
 import { Calendar as CalendarIcon, Search, CheckCircle2, XCircle, Save, ClipboardList, ListChecks } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -67,12 +69,7 @@ const TakeAttendance = () => {
             if (profilesError) throw profilesError;
             setUsers(profilesData || []);
 
-            const { data: attendanceData, error: attendanceError } = await supabaseAdmin
-                .from('attendance')
-                .select('id, user_id, status')
-                .eq('date', selectedDate);
-
-            if (attendanceError) throw attendanceError;
+            const attendanceData = await attendanceService.fetchAttendanceForDateAdmin(selectedDate);
 
             const aMap = {};
             const eMap = {};
@@ -83,7 +80,7 @@ const TakeAttendance = () => {
             setAttendanceMap(aMap);
             setExistingRecords(eMap);
         } catch (error) {
-            toast.error('Failed to load users');
+            toast.error('Failed to load users or attendance');
             console.error(error);
         } finally {
             setLoading(false);
@@ -141,18 +138,7 @@ const TakeAttendance = () => {
                 }
             });
 
-            if (toInsert.length > 0) {
-                const { error: insertError } = await supabaseAdmin.from('attendance').insert(toInsert);
-                if (insertError) throw insertError;
-            }
-
-            for (const record of toUpdate) {
-                const { error: updateError } = await supabaseAdmin
-                    .from('attendance')
-                    .update({ status: record.status })
-                    .eq('id', record.id);
-                if (updateError) throw updateError;
-            }
+            await attendanceService.saveAttendanceBatchAdmin(toInsert, toUpdate);
 
             toast.success(`Attendance saved for ${selectedDate}!`);
 
@@ -321,20 +307,15 @@ const TakeAttendance = () => {
 
             {/* Save button */}
             {users.length > 0 && !isSundayDate && (
-                <button
+                <Button
                     onClick={saveAttendance}
-                    disabled={saving}
-                    className="w-full flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base sm:text-lg rounded-2xl shadow-xl shadow-indigo-600/20 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                    isLoading={saving}
+                    fullWidth
+                    className="text-lg py-3 sm:py-4"
                 >
-                    {saving ? (
-                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                        <>
-                            <Save className="w-5 h-5 sm:w-6 sm:h-6" />
-                            {hasExistingRecords ? 'Update Attendance' : 'Save Attendance'}
-                        </>
-                    )}
-                </button>
+                    <Save className="w-5 h-5 sm:w-6 sm:h-6" />
+                    {hasExistingRecords ? 'Update Attendance' : 'Save Attendance'}
+                </Button>
             )}
 
             {/* WhatsApp Notification Panel */}
