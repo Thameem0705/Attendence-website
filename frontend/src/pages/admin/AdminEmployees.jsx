@@ -11,6 +11,7 @@ export const AdminEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [roleFilter, setRoleFilter] = useState('all');
     const [selectedEmployee, setSelectedEmployee] = useState(null);
 
     useEffect(() => {
@@ -37,6 +38,7 @@ export const AdminEmployees = () => {
     };
 
     const filteredEmployees = employees.filter(e => {
+        if (roleFilter !== 'all' && e.role !== roleFilter) return false;
         if (!search) return true;
         const q = search.toLowerCase();
         return (
@@ -64,15 +66,26 @@ export const AdminEmployees = () => {
                             <p className="text-sm text-slate-500">{employees.length} employees registered</p>
                         </div>
                     </div>
-                    <div className="relative w-full md:w-72">
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                        <input
-                            type="text"
-                            placeholder="Search employees..."
-                            className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        <select
+                            value={roleFilter}
+                            onChange={(e) => setRoleFilter(e.target.value)}
+                            className="px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white min-w-[120px]"
+                        >
+                            <option value="all">All Roles</option>
+                            <option value="staff">Staff</option>
+                            <option value="trainee">Trainee</option>
+                        </select>
+                        <div className="relative w-full sm:w-72">
+                            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                            <input
+                                type="text"
+                                placeholder="Search employees..."
+                                className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

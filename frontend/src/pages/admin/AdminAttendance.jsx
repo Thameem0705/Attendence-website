@@ -389,6 +389,7 @@ const AttendanceRecords = () => {
     const [userNames, setUserNames] = useState({});
     const [filterType, setFilterType] = useState('all');
     const [searchUser, setSearchUser] = useState('');
+    const [selectedHistoryDate, setSelectedHistoryDate] = useState('');
 
     const fetchAttendance = async () => {
         setLoading(true);
@@ -419,6 +420,8 @@ const AttendanceRecords = () => {
                 const d = new Date();
                 d.setMonth(d.getMonth() - 1);
                 query = query.gte('date', d.toISOString().split('T')[0]);
+            } else if (filterType === 'custom' && selectedHistoryDate) {
+                query = query.eq('date', selectedHistoryDate);
             }
 
             if (searchUser) {
@@ -447,8 +450,10 @@ const AttendanceRecords = () => {
     };
 
     useEffect(() => {
-        fetchAttendance();
-    }, [filterType]);
+        if (filterType !== 'custom' || (filterType === 'custom' && selectedHistoryDate)) {
+            fetchAttendance();
+        }
+    }, [filterType, selectedHistoryDate]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -476,7 +481,10 @@ const AttendanceRecords = () => {
                             {['all', 'today', 'week', 'month'].map(type => (
                                 <button
                                     key={type}
-                                    onClick={() => setFilterType(type)}
+                                    onClick={() => {
+                                        setFilterType(type);
+                                        setSelectedHistoryDate('');
+                                    }}
                                     className={`flex-shrink-0 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-md capitalize transition-colors ${filterType === type
                                         ? 'bg-white text-indigo-600 shadow-sm'
                                         : 'text-slate-600 hover:text-slate-900'
@@ -485,6 +493,23 @@ const AttendanceRecords = () => {
                                     {type}
                                 </button>
                             ))}
+                            <div className="h-4 w-px bg-slate-300 mx-2 hidden sm:block"></div>
+                            <input
+                                type="date"
+                                value={selectedHistoryDate}
+                                onChange={(e) => {
+                                    setSelectedHistoryDate(e.target.value);
+                                    if (e.target.value) {
+                                        setFilterType('custom');
+                                    } else {
+                                        setFilterType('all');
+                                    }
+                                }}
+                                className={`flex-shrink-0 px-2 py-1.5 text-xs sm:text-sm font-medium rounded-md border-0 bg-transparent focus:ring-0 cursor-pointer ${filterType === 'custom'
+                                    ? 'bg-white text-indigo-600 shadow-sm'
+                                    : 'text-slate-600 hover:text-slate-900'
+                                    }`}
+                            />
                         </div>
 
                         <form onSubmit={handleSearch} className="relative flex-1">
