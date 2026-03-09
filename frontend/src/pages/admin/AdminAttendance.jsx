@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
 import { attendanceService } from '../../services/attendanceService';
 import Button from '../../components/ui/Button';
-import { Calendar as CalendarIcon, Search, CheckCircle2, XCircle, Save, ClipboardList, ListChecks } from 'lucide-react';
+import { Calendar as CalendarIcon, Search, CheckCircle2, XCircle, Save, ClipboardList, ListChecks, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const AdminAttendance = () => {
@@ -460,6 +460,36 @@ const AttendanceRecords = () => {
         fetchAttendance();
     };
 
+    const exportToCSV = () => {
+        if (attendance.length === 0) {
+            toast.error("No records to export.");
+            return;
+        }
+
+        const headers = ['Date', 'Employee Name', 'Status', 'Recorded At'];
+        const csvRows = [headers.join(',')];
+
+        attendance.forEach(record => {
+            const row = [
+                record.date,
+                `"${userNames[record.user_id] || 'Unknown'}"`,
+                record.status,
+                `"${new Date(record.created_at).toLocaleString()}"`
+            ];
+            csvRows.push(row.join(','));
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `attendance_export_${filterType}_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Exported successfully!");
+    };
+
     // Stats
     const presentCount = attendance.filter(a => a.status === 'present').length;
     const absentCount = attendance.filter(a => a.status === 'absent').length;
@@ -471,9 +501,18 @@ const AttendanceRecords = () => {
             {/* Header & Filters */}
             <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm animate-fade-in-up">
                 <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                        <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
-                        <h2 className="text-lg sm:text-xl font-bold text-slate-800">Attendance Records</h2>
+                    <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                            <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+                            <h2 className="text-lg sm:text-xl font-bold text-slate-800">Attendance Records</h2>
+                        </div>
+                        <button
+                            onClick={exportToCSV}
+                            className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-sm font-semibold transition-colors"
+                        >
+                            <Download className="w-4 h-4" />
+                            <span className="hidden sm:inline">Export CSV</span>
+                        </button>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3">
