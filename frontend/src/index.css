@@ -58,6 +58,32 @@
   }
 }
 
+@keyframes shine {
+  0% {
+    left: -100%;
+    right: 200%;
+  }
+
+  100% {
+    left: 200%;
+    right: -100%;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

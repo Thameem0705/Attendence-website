@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabaseAdmin } from '../../lib/supabaseAdmin';
 import { Users, FileX, CalendarCheck, TrendingUp, UserCheck, Briefcase, GraduationCap, Clock, BarChart3, Percent, UserX } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -350,37 +351,69 @@ export const AdminDashboard = () => {
     const today = new Date();
     const greeting = today.getHours() < 12 ? 'Good Morning' : today.getHours() < 17 ? 'Good Afternoon' : 'Good Evening';
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+    };
+
     return (
-        <div className="space-y-4 sm:space-y-6">
+        <motion.div
+            className="space-y-4 sm:space-y-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
             {/* Page Header */}
-            <div className="animate-fade-in-up">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">{greeting} 👋</h1>
-                <p className="text-slate-500 mt-1">{today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            </div>
+            <motion.div variants={itemVariants} className="animate-fade-in-up flex items-center justify-between bg-gradient-to-r from-white to-slate-50 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden gap-3 sm:gap-4">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="relative z-10 min-w-0 flex-1">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight leading-tight">{greeting} 👋</h1>
+                    <p className="text-slate-500 mt-0.5 sm:mt-1 font-medium text-xs sm:text-sm md:text-base truncate">{today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+                <div className="relative z-10 hidden sm:flex items-center gap-3 bg-white p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shadow-md border border-slate-100 transition-transform hover:scale-105 duration-300 flex-shrink-0">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+                        <img src="/logo.png" alt="Sulthan & Co" className="w-full h-full object-contain" />
+                    </div>
+                    <div className="pr-1 sm:pr-2 hidden md:block">
+                        <h2 className="font-bold text-slate-800 tracking-tight text-sm sm:text-base leading-tight uppercase">Sulthan & Co</h2>
+                        <p className="text-[10px] sm:text-xs font-bold text-indigo-500 uppercase tracking-widest mt-0.5">ITP Auditor</p>
+                    </div>
+                </div>
+            </motion.div>
             {/* Sunday Banner */}
             {stats.isSundayToday && (
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
-                    <span className="text-2xl">☀️</span>
+                <motion.div variants={itemVariants} className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
+                    <span className="text-2xl mt-1">☀️</span>
                     <div>
                         <p className="font-bold text-amber-800">Today is Sunday — Holiday!</p>
                         <p className="text-sm text-amber-600">No attendance is taken on Sundays.</p>
                     </div>
-                </div>
+                </motion.div>
             )}
 
             {/* Top Stat Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+            <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                 <StatCard icon={Users} label="Total Users" value={stats.totalUsers} color="indigo" delay={0} />
                 <StatCard icon={CalendarCheck} label="Present Today" value={stats.isSundayToday ? '—' : stats.presentToday} color="emerald" delay={1} />
                 <StatCard icon={UserX} label="Absent Today" value={stats.isSundayToday ? '—' : stats.absentToday} color="red" delay={2} />
                 <StatCard icon={Percent} label="Today's Rate" value={stats.isSundayToday ? 'Holiday' : `${stats.attendanceRate}%`} color="cyan" delay={3} />
                 <StatCard icon={Briefcase} label="Total Staff" value={stats.totalStaff} color="blue" delay={4} />
                 <StatCard icon={GraduationCap} label="Total Trainees" value={stats.totalTrainees} color="purple" delay={5} />
-            </div>
+            </motion.div>
 
             {/* Pending Requests Alert */}
             {stats.pendingRequests > 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
+                <motion.div variants={itemVariants} className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
                     <div className="bg-amber-100 p-2 rounded-lg">
                         <FileX className="w-5 h-5 text-amber-600" />
                     </div>
@@ -388,12 +421,15 @@ export const AdminDashboard = () => {
                         <p className="font-semibold text-amber-800">{stats.pendingRequests} Pending Request{stats.pendingRequests > 1 ? 's' : ''}</p>
                         <p className="text-sm text-amber-600">Awaiting your review</p>
                     </div>
-                </div>
+                </motion.div>
             )}
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                <div className="lg:col-span-2 bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm">
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <motion.div
+                    whileHover={{ scale: 1.01, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }}
+                    className="lg:col-span-2 bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm transition-all duration-300"
+                >
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-indigo-50 p-2 rounded-lg">
                             <TrendingUp className="w-5 h-5 text-indigo-600" />
@@ -406,9 +442,12 @@ export const AdminDashboard = () => {
                     <div className="h-56 sm:h-72">
                         <Line data={lineChartData} options={lineChartOptions} />
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm">
+                <motion.div
+                    whileHover={{ scale: 1.02, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }}
+                    className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm transition-all duration-300"
+                >
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-purple-50 p-2 rounded-lg">
                             <Users className="w-5 h-5 text-purple-600" />
@@ -428,12 +467,15 @@ export const AdminDashboard = () => {
                             <p className="text-xs text-purple-600">Trainees</p>
                         </div>
                     </div>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
 
             {/* Second Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm">
+            <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <motion.div
+                    whileHover={{ scale: 1.02, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }}
+                    className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm transition-all duration-300"
+                >
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-indigo-50 p-2 rounded-lg">
                             <BarChart3 className="w-5 h-5 text-indigo-600" />
@@ -446,9 +488,12 @@ export const AdminDashboard = () => {
                     <div className="h-48 sm:h-56">
                         <Bar data={barChartData} options={barChartOptions} />
                     </div>
-                </div>
+                </motion.div>
 
-                <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm">
+                <motion.div
+                    whileHover={{ scale: 1.02, boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }}
+                    className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm transition-all duration-300"
+                >
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-cyan-50 p-2 rounded-lg">
                             <Clock className="w-5 h-5 text-cyan-600" />
@@ -460,7 +505,13 @@ export const AdminDashboard = () => {
                             <p className="text-sm text-slate-500 text-center py-4">No recent activity</p>
                         ) : (
                             recentActivity.map((activity, i) => (
-                                <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.5 + (i * 0.1) }}
+                                    className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors"
+                                >
                                     <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${activity.type === 'attendance'
                                         ? activity.status === 'present' ? 'bg-emerald-500' : 'bg-red-500'
                                         : activity.status === 'pending' ? 'bg-amber-500' : activity.status === 'approved' ? 'bg-emerald-500' : 'bg-red-500'
@@ -471,50 +522,50 @@ export const AdminDashboard = () => {
                                             {new Date(activity.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))
                         )}
                     </div>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
 
             {/* Daily Breakdown */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="p-4 sm:p-5 border-b border-slate-100">
+            <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="p-4 sm:p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
                     <h3 className="text-base sm:text-lg font-bold text-slate-800">Daily Breakdown</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-slate-600 font-medium">
+                        <thead className="bg-slate-50/50 text-slate-600 font-medium">
                             <tr>
                                 {DAY_LABELS.map((day, i) => (
-                                    <th key={day} className={`px-3 sm:px-6 py-3 text-center ${i === 6 ? 'text-amber-600 bg-amber-50' : ''}`}>
+                                    <th key={day} className={`px-3 sm:px-6 py-3 text-center ${i === 6 ? 'text-amber-600 bg-amber-50/50' : ''}`}>
                                         {i === 6 ? '☀️ Sun' : day}
                                     </th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody>
-                            <tr className="border-b border-slate-100">
+                            <tr className="border-b border-slate-100 hover:bg-slate-50/40 transition-colors">
                                 {weeklyPresent.map((count, i) => (
-                                    <td key={i} className={`px-3 sm:px-6 py-3 text-center ${i === 6 ? 'bg-amber-50/50' : ''}`}>
+                                    <td key={i} className={`px-3 sm:px-6 py-3 text-center ${i === 6 ? 'bg-amber-50/30' : ''}`}>
                                         {i === 6 ? (
                                             <span className="text-xs text-amber-500 font-semibold">Holiday</span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold bg-emerald-100/80 text-emerald-700 ring-1 ring-emerald-200/50">
                                                 <UserCheck className="w-3 h-3 hidden sm:inline" />{count}
                                             </span>
                                         )}
                                     </td>
                                 ))}
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-50/40 transition-colors">
                                 {weeklyAbsent.map((count, i) => (
-                                    <td key={i} className={`px-3 sm:px-6 py-3 text-center ${i === 6 ? 'bg-amber-50/50' : ''}`}>
+                                    <td key={i} className={`px-3 sm:px-6 py-3 text-center ${i === 6 ? 'bg-amber-50/30' : ''}`}>
                                         {i === 6 ? (
                                             <span className="text-xs text-amber-500">—</span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold bg-red-100/80 text-red-700 ring-1 ring-red-200/50">
                                                 <FileX className="w-3 h-3 hidden sm:inline" />{count}
                                             </span>
                                         )}
@@ -524,8 +575,8 @@ export const AdminDashboard = () => {
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };
 
@@ -541,15 +592,17 @@ const StatCard = ({ icon: Icon, label, value, color, delay = 0 }) => {
     };
 
     return (
-        <div
-            className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-sm card-hover-lift text-center animate-fade-in-up"
-            style={{ animationDelay: `${delay * 0.08}s` }}
+        <motion.div
+            whileHover={{ y: -5, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className={`bg-white rounded-2xl p-4 sm:p-5 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] text-center animate-fade-in-up hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] transition-shadow duration-300 relative overflow-hidden`}
         >
-            <div className={`inline-flex p-2.5 sm:p-3 rounded-xl ${colorMap[color]} mb-2`}>
+            <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-${color}-100 to-transparent rounded-bl-full opacity-50 pointer-events-none`}></div>
+            <div className={`inline-flex p-2.5 sm:p-3 rounded-xl ${colorMap[color]} mb-2 relative z-10 ring-4 ring-${color}-50`}>
                 <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-slate-800">{value}</p>
-            <p className="text-xs sm:text-sm font-semibold text-slate-500 mt-1">{label}</p>
-        </div>
+            <p className="text-2xl sm:text-3xl font-bold text-slate-800 relative z-10 tracking-tight">{value}</p>
+            <p className="text-xs sm:text-sm font-semibold text-slate-500 mt-1 relative z-10">{label}</p>
+        </motion.div>
     );
 };

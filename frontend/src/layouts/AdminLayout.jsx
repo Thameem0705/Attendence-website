@@ -54,19 +54,17 @@ export const AdminLayout = ({ children }) => {
             `}>
                     <div className="h-full flex flex-col">
                         {/* Brand */}
-                        <div className="px-6 py-6 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1, #06b6d4)' }}>
-                                    <CalendarCheck className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                    <h1 className="text-lg font-bold text-white tracking-tight">AttendSync</h1>
-                                    <p className="text-[10px] font-medium text-indigo-400 uppercase tracking-wider">Admin Panel</p>
-                                </div>
-                            </div>
-                            <button className="lg:hidden text-slate-400 hover:text-white transition-colors" onClick={() => setIsSidebarOpen(false)}>
+                        <div className="px-4 py-5 flex flex-col items-center justify-center border-b border-white/10 relative">
+                            <button className="lg:hidden text-slate-400 hover:text-white transition-colors absolute top-3 right-3" onClick={() => setIsSidebarOpen(false)}>
                                 <X className="w-5 h-5" />
                             </button>
+                            <div className="w-14 h-14 mb-2.5 bg-white rounded-xl shadow-lg flex items-center justify-center overflow-hidden">
+                                <img src="/logo.png" alt="Sulthan & Co" className="w-full h-full object-contain p-1" />
+                            </div>
+                            <div className="text-center w-full">
+                                <h1 className="text-base font-bold text-white tracking-tight uppercase leading-snug">Sulthan & Co</h1>
+                                <p className="text-[10px] font-medium text-indigo-400 uppercase tracking-widest mt-0.5">Admin Panel</p>
+                            </div>
                         </div>
 
                         {/* Navigation */}
@@ -119,18 +117,18 @@ export const AdminLayout = ({ children }) => {
                 {/* Main Content */}
                 <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                     {/* Mobile Header */}
-                    <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-4 flex items-center shadow-sm">
+                    <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-center shadow-sm relative">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="text-slate-500 hover:text-slate-700 focus:outline-none"
+                            className="text-slate-500 hover:text-slate-700 focus:outline-none absolute left-4 z-10 p-1"
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        <div className="ml-4 flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1, #06b6d4)' }}>
-                                <CalendarCheck className="w-4 h-4 text-white" />
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <img src="/logo.png" alt="Sulthan & Co" className="w-full h-full object-contain" />
                             </div>
-                            <h1 className="text-lg font-bold text-slate-800">AttendSync</h1>
+                            <h1 className="text-base font-bold text-slate-800 tracking-tight uppercase leading-tight">Sulthan & Co</h1>
                         </div>
                     </header>
 
